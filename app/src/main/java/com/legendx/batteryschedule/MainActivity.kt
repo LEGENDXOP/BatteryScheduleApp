@@ -69,7 +69,7 @@ class MainActivity : ComponentActivity() {
 }
 
 const val CHANNEL_ID = "BatterySchedule"
-// idhar test kra me ab
+
 fun createNotificationChannel(context: Context) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
         val importance = NotificationManager.IMPORTANCE_HIGH
