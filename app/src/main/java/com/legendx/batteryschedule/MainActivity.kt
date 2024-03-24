@@ -63,7 +63,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             BatteryScheduleTheme {
                MainScreen()
-//                test krra ha hu
             }
         }
     }
