@@ -51,7 +51,7 @@ android {
 
 dependencies {
     // My dependencies
-
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
     implementation("androidx.constraintlayout:constraintlayout-compose:1.1.0-alpha13")
 
     // Compose dependencies

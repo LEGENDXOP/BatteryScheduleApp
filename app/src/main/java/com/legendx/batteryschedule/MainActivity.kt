@@ -34,6 +34,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -51,11 +52,17 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.legendx.batteryschedule.components.BatteryService
 import com.legendx.batteryschedule.components.HomeActivity
+import com.legendx.batteryschedule.components.WorkerClass
 import com.legendx.batteryschedule.helpers.DataManage
 import com.legendx.batteryschedule.helpers.HelperFunctions
 import com.legendx.batteryschedule.ui.theme.BatteryScheduleTheme
+import java.util.UUID
+import java.util.concurrent.TimeUnit
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -93,6 +100,20 @@ fun MainScreen(){
             Toast.makeText(context, "Permission Denied", Toast.LENGTH_SHORT).show()
         }
     }
+    /*
+        LaunchedEffect(Unit) {
+            val workRequest = PeriodicWorkRequestBuilder<WorkerClass>(
+                repeatInterval = 10,
+                repeatIntervalTimeUnit = TimeUnit.MINUTES
+            ).build()
+            val randomID = UUID.randomUUID().toString()
+            WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+                randomID,
+                ExistingPeriodicWorkPolicy.KEEP,
+                workRequest
+            )
+        }
+     */
         SideEffect {
             DataManage.initialize(context)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -108,7 +129,6 @@ fun MainScreen(){
                 val serviceIntent = Intent(context, BatteryService::class.java)
                 context.stopService(serviceIntent)
             }
-
         }
 
     Box {
