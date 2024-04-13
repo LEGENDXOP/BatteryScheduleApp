@@ -52,6 +52,7 @@ object HelperFunctions {
                     if (currentData == finalMessage) {
                         DataManage.removeData(i.toString())
                         Log.d("Battery1", "Schedule Removed Successfully\n$finalMessage")
+                        MainFunctions.checkSchedule()
                         return
                     }
                 }
@@ -59,7 +60,6 @@ object HelperFunctions {
         }
         Log.d("Battery1", "Schedule not found: $finalMessage")
     }
-
 
     fun removeAllSchedule() {
         val currentKey = DataManage.getData("currentKey")
@@ -74,35 +74,17 @@ object HelperFunctions {
 
 }
 
-object Authentication {
-    private var password = ""
-    fun leftPassword() {
-        password += "9"
-    }
-
-    fun rightPassword() {
-        password += "0"
-    }
-
-    fun authenticate(): Boolean {
-        return if (password == "0900") {
-            password = ""
-            true
-        } else {
-            password = ""
-            false
+object MainFunctions{
+    fun checkSchedule(){
+        val allSchedule = HelperFunctions.allSchedule()
+        DataManage.getData("isSchedule").toBoolean()
+        if (allSchedule.isNotEmpty()){
+            DataManage.saveData("isSchedule", "true")
+        }
+        else{
+            DataManage.saveData("isSchedule", "false")
         }
     }
-
-    fun resetDataBase(): Boolean {
-        println(password)
-        return if (password == "9099") {
-            true
-        } else {
-            false
-        }
-    }
-
 }
 
 

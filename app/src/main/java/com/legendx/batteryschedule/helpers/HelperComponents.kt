@@ -4,9 +4,11 @@ package com.legendx.batteryschedule.helpers
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,7 +19,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -26,11 +30,13 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -58,6 +64,7 @@ import androidx.compose.ui.unit.sp
 import com.legendx.batteryschedule.R
 import com.legendx.batteryschedule.components.BatteryService
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -134,7 +141,7 @@ fun BottomSheetContent(
             value = textValue, onValueChange = { textValue = it },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 12.dp, start = 4.dp, end = 4.dp),
+                .padding(vertical = 8.dp, horizontal = 4.dp),
             label = { Text("Enter your schedule Message") },
             leadingIcon = {
                 Icon(
@@ -213,13 +220,22 @@ fun BottomSheetContent(
                         }
                     }
                     scope.launch {
-                        val intentService =  Intent(context, BatteryService::class.java)
-                        context.startService(intentService)
+                        val isSchedule = DataManage.getData("isSchedule").toBoolean()
+                        if (!isSchedule) {
+                            DataManage.saveData("isSchedule", "true")
+                            val intentService = Intent(context, BatteryService::class.java)
+                            context.startService(intentService)
+                            Toast.makeText(context, "Schedule Set Successfully", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                        else{
+                            Toast.makeText(context, "Schedule Set Successfully", Toast.LENGTH_SHORT)
+                                .show()
+                        }
                     }
-                    Toast.makeText(context, "Schedule Set Successfully", Toast.LENGTH_SHORT).show()
                 },
                 modifier = Modifier
-                    .padding(top = 16.dp, start = 8.dp, end = 8.dp)
+                    .padding(horizontal = 8.dp, vertical = 16.dp)
                     .fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Black,
@@ -267,7 +283,7 @@ fun ViewScheduleContent() {
             Divider(modifier = Modifier.padding(top = 8.dp, bottom = 8.dp))
         }
         item {
-            Spacer(modifier = Modifier.height(screenHeight.dp * 0.8f))
+            Spacer(modifier = Modifier.height(screenHeight.dp * 0.9f))
         }
     }
 }
@@ -275,6 +291,12 @@ fun ViewScheduleContent() {
 
 @Composable
 fun DemoData(scheduleSet: ScheduleSet) {
+    var showDialog by remember {
+        mutableStateOf(false)
+    }
+    var scheduleSetToDelete by remember {
+        mutableStateOf<ScheduleSet?>(null)
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -285,37 +307,54 @@ fun DemoData(scheduleSet: ScheduleSet) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp),
-            horizontalArrangement = Arrangement.Start,
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = Icons.Default.AccountCircle, contentDescription = "id icon",
-                modifier = Modifier.size(32.dp)
-            )
-            Text(text = ": ${scheduleSet.id}", textAlign = TextAlign.Center, fontSize = 24.sp)
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "${scheduleSet.batteryLevel} :",
-                    textAlign = TextAlign.Center,
-                    fontSize = 24.sp
-                )
+            Row{
                 Icon(
-                    painter = painterResource(id = R.drawable.sharp_battery_charging_full),
-                    contentDescription = "battery icon",
+                    imageVector = Icons.Default.AccountCircle, contentDescription = "id icon",
                     modifier = Modifier.size(32.dp)
                 )
+                Text(text = ": ${scheduleSet.id}", textAlign = TextAlign.Center, fontSize = 24.sp)
             }
+            if (showDialog){
+                DialogToDelete(scheduleSet = scheduleSetToDelete!!){
+                    showDialog = it
+
+                }
+            }
+            if(!showDialog){
+                showDialog = false
+                scheduleSetToDelete = null
+            }
+            Box{
+                IconButton(onClick = {
+                    scheduleSetToDelete = scheduleSet
+                    showDialog = true
+                }) {
+                    Icon(imageVector = Icons.Default.Delete,
+                        contentDescription = "delete icon",
+                        modifier = Modifier.size(36.dp))
+                }
+            }
+            Row{
+               Text(
+                   text = "${scheduleSet.batteryLevel} :",
+                   textAlign = TextAlign.Center,
+                   fontSize = 24.sp
+               )
+               Icon(
+                   painter = painterResource(id = R.drawable.sharp_battery_charging_full),
+                   contentDescription = "battery icon",
+                   modifier = Modifier.size(32.dp)
+               )
+           }
         }
 
         Column(
             modifier = Modifier
                 .padding(top = 14.dp)
-                .fillMaxWidth(),
+                .fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -332,7 +371,7 @@ fun DemoData(scheduleSet: ScheduleSet) {
                     .padding(horizontal = 4.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFFFFB1F3),
+                    containerColor = Color(0xFF8000FF),
                 )
             ) {
                 Text(
@@ -340,7 +379,7 @@ fun DemoData(scheduleSet: ScheduleSet) {
                     fontSize = 18.sp,
                     fontFamily = FontFamily(Font(R.font.roboto_slab)),
                     fontWeight = FontWeight.SemiBold,
-                    color = Color(0xFF8000FF),
+                    color = Color.White,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -349,4 +388,37 @@ fun DemoData(scheduleSet: ScheduleSet) {
             }
         }
     }
+}
+
+
+@Composable
+fun DialogToDelete(scheduleSet: ScheduleSet, run: (Boolean)-> Unit){
+    val context = LocalContext.current
+    AlertDialog(
+        title = {
+            Text(text = "Delete Schedule")
+        },
+        text = {
+            Text(text = "Are you sure you want to delete this schedule?")
+        },
+        onDismissRequest = { run(false) },
+        confirmButton = {
+            TextButton(onClick = {
+                CoroutineScope(Dispatchers.IO).launch {
+                    HelperFunctions.removeSchedule(scheduleSet)
+                }
+                Toast.makeText(context, "Schedule deleted", Toast.LENGTH_SHORT).show()
+                run(false)
+            }) {
+                Text(text = "Yes")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = {
+                run(false)
+            }) {
+                Text(text = "No")
+            }
+        }
+        )
 }

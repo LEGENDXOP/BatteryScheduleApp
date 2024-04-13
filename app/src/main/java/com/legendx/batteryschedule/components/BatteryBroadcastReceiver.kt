@@ -78,6 +78,6 @@ fun sendNotification(context: Context, message: String) {
         .setAutoCancel(true)
         .setColor(Color(0xFF5F33E1).toArgb())
 
-
-    notificationManager.notify(1, notificationBuilder.build())
+    val randomID = (0..1000).random()
+    notificationManager.notify(randomID, notificationBuilder.build())
 }

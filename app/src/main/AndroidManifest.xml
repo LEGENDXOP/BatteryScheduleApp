@@ -13,8 +13,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BatterySchedule"
         tools:targetApi="31">
+
         <service android:name=".components.BatteryService"
             android:enabled="true" android:exported="false"/>
+
         <activity
             android:name=".components.HomeActivity"
             android:exported="false"

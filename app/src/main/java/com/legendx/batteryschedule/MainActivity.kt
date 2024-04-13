@@ -9,7 +9,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -55,11 +54,9 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import com.legendx.batteryschedule.components.BatteryService
 import com.legendx.batteryschedule.components.HomeActivity
 import com.legendx.batteryschedule.components.WorkerClass
 import com.legendx.batteryschedule.helpers.DataManage
-import com.legendx.batteryschedule.helpers.HelperFunctions
 import com.legendx.batteryschedule.ui.theme.BatteryScheduleTheme
 import java.util.UUID
 import java.util.concurrent.TimeUnit
@@ -100,10 +97,10 @@ fun MainScreen(){
             Toast.makeText(context, "Permission Denied", Toast.LENGTH_SHORT).show()
         }
     }
-    /*
+
         LaunchedEffect(Unit) {
             val workRequest = PeriodicWorkRequestBuilder<WorkerClass>(
-                repeatInterval = 10,
+                repeatInterval = 15,
                 repeatIntervalTimeUnit = TimeUnit.MINUTES
             ).build()
             val randomID = UUID.randomUUID().toString()
@@ -112,23 +109,24 @@ fun MainScreen(){
                 ExistingPeriodicWorkPolicy.KEEP,
                 workRequest
             )
+
         }
-     */
+
         SideEffect {
             DataManage.initialize(context)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 requestPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
             createNotificationChannel(context)
-            val allDataSize = HelperFunctions.allSchedule().size
-            Log.d("Data", "All Data Size: $allDataSize")
-            if (allDataSize > 0){
-                val serviceIntent = Intent(context, BatteryService::class.java)
-                context.startService(serviceIntent)
-            }else{
-                val serviceIntent = Intent(context, BatteryService::class.java)
-                context.stopService(serviceIntent)
-            }
+//            val allDataSize = HelperFunctions.allSchedule().size
+//            Log.d("Data", "All Data Size: $allDataSize")
+//            if (allDataSize > 0){
+//                val serviceIntent = Intent(context, BatteryService::class.java)
+//                context.startService(serviceIntent)
+//            }else{
+//                val serviceIntent = Intent(context, BatteryService::class.java)
+//                context.stopService(serviceIntent)
+//            }
         }
 
     Box {
