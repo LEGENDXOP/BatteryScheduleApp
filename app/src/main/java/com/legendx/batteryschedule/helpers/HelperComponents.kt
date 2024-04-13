@@ -2,7 +2,6 @@ package com.legendx.batteryschedule.helpers
 
 
 import android.content.Intent
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -225,12 +224,10 @@ fun BottomSheetContent(
                             DataManage.saveData("isSchedule", "true")
                             val intentService = Intent(context, BatteryService::class.java)
                             context.startService(intentService)
-                            Toast.makeText(context, "Schedule Set Successfully", Toast.LENGTH_SHORT)
-                                .show()
+                            println("Service Started")
                         }
                         else{
-                            Toast.makeText(context, "Schedule Set Successfully", Toast.LENGTH_SHORT)
-                                .show()
+                            println("Service Already Running")
                         }
                     }
                 },
@@ -277,20 +274,23 @@ fun ViewScheduleBottomSheet(showBottom: MutableState<Boolean>) {
 fun ViewScheduleContent() {
     val allData = HelperFunctions.allSchedule()
     val screenHeight = LocalConfiguration.current.screenHeightDp
-    LazyColumn {
-        items(allData.size) { index ->
-            DemoData(scheduleSet = allData[index])
-            Divider(modifier = Modifier.padding(top = 8.dp, bottom = 8.dp))
-        }
-        item {
-            Spacer(modifier = Modifier.height(screenHeight.dp * 0.9f))
-        }
-    }
+    var recompose by remember { mutableStateOf(1) }
+   if (recompose == recompose){
+       LazyColumn {
+           items(allData.size) { index ->
+               DemoData(scheduleSet = allData[index]){recompose++}
+               Divider(modifier = Modifier.padding(top = 8.dp, bottom = 8.dp))
+           }
+           item {
+               Spacer(modifier = Modifier.height(screenHeight.dp * 0.9f))
+           }
+       }
+   }
 }
 
 
 @Composable
-fun DemoData(scheduleSet: ScheduleSet) {
+fun DemoData(scheduleSet: ScheduleSet, recompose: () ->Unit) {
     var showDialog by remember {
         mutableStateOf(false)
     }
@@ -318,9 +318,11 @@ fun DemoData(scheduleSet: ScheduleSet) {
                 Text(text = ": ${scheduleSet.id}", textAlign = TextAlign.Center, fontSize = 24.sp)
             }
             if (showDialog){
-                DialogToDelete(scheduleSet = scheduleSetToDelete!!){
-                    showDialog = it
-
+                DialogToDelete(scheduleSet = scheduleSetToDelete!!) { disable, bottomOff ->
+                    showDialog = disable
+                    if (bottomOff){
+                        recompose()
+                    }
                 }
             }
             if(!showDialog){
@@ -392,7 +394,7 @@ fun DemoData(scheduleSet: ScheduleSet) {
 
 
 @Composable
-fun DialogToDelete(scheduleSet: ScheduleSet, run: (Boolean)-> Unit){
+fun DialogToDelete(scheduleSet: ScheduleSet, run: (disable: Boolean, bottomOff: Boolean)-> Unit){
     val context = LocalContext.current
     AlertDialog(
         title = {
@@ -401,21 +403,21 @@ fun DialogToDelete(scheduleSet: ScheduleSet, run: (Boolean)-> Unit){
         text = {
             Text(text = "Are you sure you want to delete this schedule?")
         },
-        onDismissRequest = { run(false) },
+        onDismissRequest = { run(false, false) },
         confirmButton = {
             TextButton(onClick = {
                 CoroutineScope(Dispatchers.IO).launch {
                     HelperFunctions.removeSchedule(scheduleSet)
                 }
-                Toast.makeText(context, "Schedule deleted", Toast.LENGTH_SHORT).show()
-                run(false)
+                println("Deleted")
+                run(false, true)
             }) {
                 Text(text = "Yes")
             }
         },
         dismissButton = {
             TextButton(onClick = {
-                run(false)
+                run(false, false)
             }) {
                 Text(text = "No")
             }

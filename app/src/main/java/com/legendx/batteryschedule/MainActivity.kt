@@ -9,7 +9,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
@@ -94,7 +93,7 @@ fun MainScreen(){
         if (isGranted){
             println("Permission Granted")
         }else{
-            Toast.makeText(context, "Permission Denied", Toast.LENGTH_SHORT).show()
+           println("Permission Denied")
         }
     }
 
@@ -119,7 +118,6 @@ fun MainScreen(){
             }
             createNotificationChannel(context)
 //            val allDataSize = HelperFunctions.allSchedule().size
-//            Log.d("Data", "All Data Size: $allDataSize")
 //            if (allDataSize > 0){
 //                val serviceIntent = Intent(context, BatteryService::class.java)
 //                context.startService(serviceIntent)

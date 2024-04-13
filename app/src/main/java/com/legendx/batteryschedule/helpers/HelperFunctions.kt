@@ -1,7 +1,5 @@
 package com.legendx.batteryschedule.helpers
 
-import android.util.Log
-
 object HelperFunctions {
 
     fun saveSchedule(scheduleSet: ScheduleSet) {
@@ -11,14 +9,13 @@ object HelperFunctions {
         currentKey?.let { value ->
             DataManage.saveData(value, finalData)
         }
-        Log.d("Data", "Data Saved Successfully\n$finalData")
+
     }
 
     fun saveKey() {
         val currentKey = DataManage.getData("currentKey")
         val newKey = (currentKey?.toInt() ?: 1) + 1
         DataManage.saveData("currentKey", newKey.toString())
-        Log.d("Data", "Key Saved Successfully\n$newKey")
     }
 
     fun allSchedule(): List<ScheduleSet> {
@@ -51,14 +48,12 @@ object HelperFunctions {
                 data?.let { currentData ->
                     if (currentData == finalMessage) {
                         DataManage.removeData(i.toString())
-                        Log.d("Battery1", "Schedule Removed Successfully\n$finalMessage")
                         MainFunctions.checkSchedule()
                         return
                     }
                 }
             }
         }
-        Log.d("Battery1", "Schedule not found: $finalMessage")
     }
 
     fun removeAllSchedule() {
@@ -69,7 +64,6 @@ object HelperFunctions {
             }
         }
         DataManage.removeData("currentKey")
-        Log.d("Data", "All Data Removed Successfully")
     }
 
 }
