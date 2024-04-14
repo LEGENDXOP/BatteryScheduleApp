@@ -10,7 +10,7 @@ Battery Schedule is a lightweight Android application developed using Kotlin and
 
 ## Installation
 To install the Battery Schedule app on your Android device, follow these steps:
-1. Download the APK file from the [releases page]
+1. Download the APK file from the [releases page](https://github.com/LEGENDXOP/BatteryScheduleApp/releases)
 2. Open the APK file on your Android device.
 3. Follow the on-screen instructions to install the app.
 4. Once installed, open the app and grant the necessary permission (notification).
