@@ -153,66 +153,6 @@ fun TopBarOfApp() {
     }
 }
 
-/*
-@Composable
-fun MiddleAndBottom(hideIcons: MutableState<Boolean>) {
-    ConstraintLayout {
-        val (lockView) = createRefs()
-        val screenHeight = LocalConfiguration.current.screenHeightDp.dp
-        val guidelineMid = createGuidelineFromTop(screenHeight * 0.4f)
-        Column(
-            modifier = Modifier
-                .constrainAs(lockView) {
-                    top.linkTo(guidelineMid)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(parent.bottom)
-                }
-                .fillMaxWidth()
-                .height(screenHeight * 0.4f),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            if (!hideIcons.value) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxSize(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(
-                        onClick = { Authentication.leftPassword() },
-                        modifier = Modifier
-                            .size(80.dp)
-                            .padding(start = 16.dp),
-
-                        ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.baseline_lock_outline),
-                            contentDescription = "lock",
-                            tint = Color(0xFF5F33E1)
-                        )
-                    }
-                    IconButton(
-                        onClick = { Authentication.rightPassword() },
-                        modifier = Modifier
-                            .size(80.dp)
-                            .padding(end = 16.dp)
-                    ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.baseline_lock_open),
-                            contentDescription = "unlock",
-                            tint = Color(0xFF5F33E1),
-                        )
-                    }
-                }
-            } else {
-                println("Hidden")
-            }
-        }
-    }
-}
-*/
 
 @Preview(showBackground = true)
 @Composable

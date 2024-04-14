@@ -72,7 +72,7 @@ fun sendNotification(context: Context, message: String) {
 
     val notificationBuilder = NotificationCompat.Builder(context, CHANNEL_ID)
         .setSmallIcon(R.drawable.baseline_notifications_active_24)
-        .setContentTitle("Battery Schedule")
+        .setContentTitle("Notification Alert")
         .setContentText(message)
         .setPriority(NotificationCompat.PRIORITY_HIGH)
         .setAutoCancel(true)

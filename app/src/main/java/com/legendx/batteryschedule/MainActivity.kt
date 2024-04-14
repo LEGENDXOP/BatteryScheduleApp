@@ -56,6 +56,7 @@ import androidx.work.WorkManager
 import com.legendx.batteryschedule.components.HomeActivity
 import com.legendx.batteryschedule.components.WorkerClass
 import com.legendx.batteryschedule.helpers.DataManage
+import com.legendx.batteryschedule.helpers.MainFunctions
 import com.legendx.batteryschedule.ui.theme.BatteryScheduleTheme
 import java.util.UUID
 import java.util.concurrent.TimeUnit
@@ -65,7 +66,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             BatteryScheduleTheme {
-               MainScreen()
+                MainScreen()
             }
         }
     }
@@ -87,48 +88,43 @@ fun createNotificationChannel(context: Context) {
 }
 
 @Composable
-fun MainScreen(){
+fun MainScreen() {
     val context = LocalContext.current
-    val requestPermission = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission()) { isGranted ->
-        if (isGranted){
-            println("Permission Granted")
-        }else{
-           println("Permission Denied")
+    val activityContract = ActivityResultContracts.RequestPermission()
+    val requestPermission =
+        rememberLauncherForActivityResult(contract = activityContract) { isGranted ->
+            if (isGranted) {
+                println("Permission Granted")
+            } else {
+                println("Permission Denied")
+            }
         }
+
+    LaunchedEffect(Unit) {
+        val workRequest = PeriodicWorkRequestBuilder<WorkerClass>(
+            repeatInterval = 15,
+            repeatIntervalTimeUnit = TimeUnit.MINUTES
+        ).build()
+        val randomID = UUID.randomUUID().toString()
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+            randomID,
+            ExistingPeriodicWorkPolicy.KEEP,
+            workRequest
+        )
+
     }
 
-        LaunchedEffect(Unit) {
-            val workRequest = PeriodicWorkRequestBuilder<WorkerClass>(
-                repeatInterval = 15,
-                repeatIntervalTimeUnit = TimeUnit.MINUTES
-            ).build()
-            val randomID = UUID.randomUUID().toString()
-            WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-                randomID,
-                ExistingPeriodicWorkPolicy.KEEP,
-                workRequest
-            )
-
+    SideEffect {
+        DataManage.initialize(context)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
         }
-
-        SideEffect {
-            DataManage.initialize(context)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                requestPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
-            }
-            createNotificationChannel(context)
-//            val allDataSize = HelperFunctions.allSchedule().size
-//            if (allDataSize > 0){
-//                val serviceIntent = Intent(context, BatteryService::class.java)
-//                context.startService(serviceIntent)
-//            }else{
-//                val serviceIntent = Intent(context, BatteryService::class.java)
-//                context.stopService(serviceIntent)
-//            }
-        }
+        createNotificationChannel(context)
+    }
 
     Box {
-        Image(painter = painterResource(id = R.drawable.background),
+        Image(
+            painter = painterResource(id = R.drawable.background),
             contentDescription = "Background Image",
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
@@ -138,14 +134,10 @@ fun MainScreen(){
 }
 
 @Composable
-fun MainViews(){
+fun MainViews() {
     val context = LocalContext.current
     val activity = (context as? Activity)
     DataManage.initialize(context)
-    val shortDescription: String = """
-        This is a simple app that helps you to schedule your Notification based on your battery percentage.
-        You can set the message and the battery percentage at which you want to get notified.
-    """.trimIndent()
     ConstraintLayout(modifier = Modifier.fillMaxSize()) {
         val (textMain, textDescription, button) = createRefs()
         val (view, icon) = createRefs()
@@ -163,21 +155,21 @@ fun MainViews(){
             fontFamily = robotoNormal,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
-                .constrainAs(textMain){
+                .constrainAs(textMain) {
                     top.linkTo(guideline)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                 }
         )
         Text(
-            text = shortDescription,
+            text = MainFunctions.shortDescription,
             style = MaterialTheme.typography.bodySmall,
             color = Color.Black,
             fontSize = 12.sp,
             textAlign = TextAlign.Center,
             fontFamily = robotoNormal,
             modifier = Modifier
-                .constrainAs(textDescription){
+                .constrainAs(textDescription) {
                     top.linkTo(textMain.bottom, margin = 24.dp)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
@@ -201,48 +193,50 @@ fun MainViews(){
                 }
                 .padding(horizontal = 16.dp),
 
-        ){
-           Row (modifier = Modifier.fillMaxWidth(),
-               horizontalArrangement = Arrangement.Center,
-               verticalAlignment = Alignment.CenterVertically){
-               ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
-                   Text(
-                       text = "Get Started",
-                       style = MaterialTheme.typography.bodyMedium,
-                       color = Color.White,
-                       fontSize = 16.sp,
-                       textAlign = TextAlign.Center,
-                       fontFamily = robotoNormal,
-                          modifier = Modifier
-                            .constrainAs(view){
+            ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = "Get Started",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.Center,
+                        fontFamily = robotoNormal,
+                        modifier = Modifier
+                            .constrainAs(view) {
                                 top.linkTo(parent.top)
                                 bottom.linkTo(parent.bottom)
                                 start.linkTo(parent.start)
                                 end.linkTo(icon.end)
                             }
-                   )
-                   Spacer(modifier = Modifier.height(50.dp))
-                   Icon(imageVector = Icons.Outlined.ArrowForward, contentDescription = "Arrow Forward",
-                       tint = Color.White,
-                       modifier = Modifier
-                           .constrainAs(icon) {
-                               top.linkTo(parent.top)
-                               bottom.linkTo(parent.bottom)
-                               end.linkTo(parent.end)
-                           }
-                           .size(34.dp)
-                     )
-               }
-           }
+                    )
+                    Spacer(modifier = Modifier.height(50.dp))
+                    Icon(imageVector = Icons.Outlined.ArrowForward,
+                        contentDescription = "Arrow Forward",
+                        tint = Color.White,
+                        modifier = Modifier
+                            .constrainAs(icon) {
+                                top.linkTo(parent.top)
+                                bottom.linkTo(parent.bottom)
+                                end.linkTo(parent.end)
+                            }
+                            .size(34.dp)
+                    )
+                }
+            }
         }
     }
 }
 
 
-
 @Preview(showBackground = true)
 @Composable
-fun MainScreenPreview(){
+fun MainScreenPreview() {
     MainScreen()
 }
 

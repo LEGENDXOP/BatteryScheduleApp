@@ -43,6 +43,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -274,7 +275,7 @@ fun ViewScheduleBottomSheet(showBottom: MutableState<Boolean>) {
 fun ViewScheduleContent() {
     val allData = HelperFunctions.allSchedule()
     val screenHeight = LocalConfiguration.current.screenHeightDp
-    var recompose by remember { mutableStateOf(1) }
+    var recompose by remember { mutableIntStateOf(1) }
    if (recompose == recompose){
        LazyColumn {
            items(allData.size) { index ->
@@ -395,7 +396,6 @@ fun DemoData(scheduleSet: ScheduleSet, recompose: () ->Unit) {
 
 @Composable
 fun DialogToDelete(scheduleSet: ScheduleSet, run: (disable: Boolean, bottomOff: Boolean)-> Unit){
-    val context = LocalContext.current
     AlertDialog(
         title = {
             Text(text = "Delete Schedule")

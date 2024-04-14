@@ -71,7 +71,6 @@ object HelperFunctions {
 object MainFunctions{
     fun checkSchedule(){
         val allSchedule = HelperFunctions.allSchedule()
-        DataManage.getData("isSchedule").toBoolean()
         if (allSchedule.isNotEmpty()){
             DataManage.saveData("isSchedule", "true")
         }
@@ -79,6 +78,10 @@ object MainFunctions{
             DataManage.saveData("isSchedule", "false")
         }
     }
+    val shortDescription: String = """
+        This is a simple app that helps you to schedule your Notification based on your battery percentage.
+        You can set the message and the battery percentage at which you want to get notified.
+    """.trimIndent()
 }
 
 
