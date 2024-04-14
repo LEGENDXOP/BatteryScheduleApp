@@ -27,6 +27,11 @@ To install the Battery Schedule app on your Android device, follow these steps:
    - You can see a list of saved schedules with corresponding battery levels and messages.
    - Use the delete icon to delete any unwanted schedules.
 
+**NOTE:**
+> The app must not be in recent tasks to run correctly because if the app remains in recent apps,
+> It will consume more RAM and battery. Therefore,
+> When you set the schedule, please remove the app from recent apps.
+
 ## Screenshots
 ![Screenshot 1](https://raw.githubusercontent.com/LEGENDXOP/about/main/myData/Screenshot_2024_04_14_16_02_21_56_a360ea4f843889c4441d827d8c44e589.jpg)
 ![Screenshot 2](https://raw.githubusercontent.com/LEGENDXOP/about/main/myData/Screenshot_2024_04_14_16_02_31_48_a360ea4f843889c4441d827d8c44e589.jpg)
